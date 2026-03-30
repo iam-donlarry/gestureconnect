@@ -227,7 +227,7 @@ function GestureEngine({ onGesture, currentText, learnedSigns = [], onLandmarks 
   }
 
   return (
-    <div className="glass animate-fade-in" style={{ padding: '24px', position: 'relative' }}>
+    <div className="glass animate-fade-in gesture-panel">
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
         <h2 style={{ fontSize: '1.1rem', fontWeight: 600 }}>Gesture Control</h2>
         <div style={{ background: isLoaded ? 'rgba(74, 222, 128, 0.1)' : 'rgba(251, 191, 36, 0.1)', color: isLoaded ? '#4ade80' : '#fbbf24', padding: '4px 8px', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 600 }}>
@@ -246,7 +246,7 @@ function GestureEngine({ onGesture, currentText, learnedSigns = [], onLandmarks 
           style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none' }}
         />
 
-        <div style={{ position: 'absolute', bottom: '16px', left: '16px', right: '16px', background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(8px)', padding: '12px 16px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', minHeight: '50px', maxHeight: '120px', overflowY: 'auto' }}>
+        <div className="gesture-transcription-overlay">
           <div style={{ fontSize: '0.65rem', color: 'var(--primary)', fontWeight: 'bold', marginBottom: '4px', textTransform: 'uppercase' }}>Live Transcription</div>
           <div style={{ fontSize: '1rem', color: 'white', fontWeight: 500, wordWrap: 'break-word', overflowWrap: 'break-word' }}>
             {currentText || "Start signing..."}
@@ -260,7 +260,7 @@ function GestureEngine({ onGesture, currentText, learnedSigns = [], onLandmarks 
         )}
       </div>
 
-      <div style={{ marginTop: '16px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+      <div className="gesture-info-grid">
         <div className="glass" style={{ padding: '10px', fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
           <div style={{ width: '8px', height: '8px', background: 'var(--success)', borderRadius: '50%' }} />
           A–Z: Full Alphabet

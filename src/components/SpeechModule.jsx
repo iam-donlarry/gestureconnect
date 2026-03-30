@@ -62,7 +62,7 @@ function SpeechModule({ onTranscription }) {
   }
 
   return (
-    <div className="glass" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+    <div className="glass speech-panel">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h3 style={{ fontSize: '1.1rem', fontWeight: 600 }}>Speech Input</h3>
         <div style={{ padding: '4px 8px', borderRadius: '4px', background: isListening ? 'var(--success)' : 'var(--surface)', fontSize: '0.7rem', textTransform: 'uppercase', fontWeight: 'bold' }}>

@@ -46,36 +46,36 @@ function EmailDashboard({ currentGesture, transcription, onTranscriptionChange, 
   }
 
   return (
-    <div className="glass" style={{ height: '700px', display: 'flex', overflow: 'hidden', position: 'relative' }}>
+    <div className="glass email-dashboard" style={{ position: 'relative' }}>
       {/* Sidebar */}
-      <nav style={{ width: '240px', borderRight: '1px solid var(--surface-border)', padding: '24px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+      <nav className="email-sidebar">
         <div 
           onClick={() => setSelectedFolder('inbox')}
           className={`btn ${selectedFolder === 'inbox' ? '' : 'btn-secondary'}`} 
-          style={{ justifyContent: 'flex-start', width: '100%' }}
+          style={{ justifyContent: 'flex-start' }}
         >
-          <Inbox size={18} /> Inbox
+          <Inbox size={18} /> <span className="btn-label">Inbox</span>
         </div>
         <div 
           onClick={() => setSelectedFolder('sent')}
           className={`btn ${selectedFolder === 'sent' ? '' : 'btn-secondary'}`} 
-          style={{ justifyContent: 'flex-start', width: '100%' }}
+          style={{ justifyContent: 'flex-start' }}
         >
-          <Send size={18} /> Sent
+          <Send size={18} /> <span className="btn-label">Sent</span>
         </div>
         <div 
           onClick={() => setSelectedFolder('trash')}
           className={`btn ${selectedFolder === 'trash' ? '' : 'btn-secondary'}`} 
-          style={{ justifyContent: 'flex-start', width: '100%' }}
+          style={{ justifyContent: 'flex-start' }}
         >
-          <Trash2 size={18} /> Trash
+          <Trash2 size={18} /> <span className="btn-label">Trash</span>
         </div>
         <div 
           onClick={() => setSelectedFolder('training')}
           className={`btn ${selectedFolder === 'training' ? '' : 'btn-secondary'}`} 
-          style={{ justifyContent: 'flex-start', width: '100%', background: selectedFolder === 'training' ? 'rgba(168, 85, 247, 0.4)' : '' }}
+          style={{ justifyContent: 'flex-start', background: selectedFolder === 'training' ? 'rgba(168, 85, 247, 0.4)' : '' }}
         >
-          <BrainCircuit size={18} /> Teach AI
+          <BrainCircuit size={18} /> <span className="btn-label">Teach AI</span>
         </div>
         
         <button 
@@ -83,12 +83,12 @@ function EmailDashboard({ currentGesture, transcription, onTranscriptionChange, 
           className="btn" 
           style={{ marginTop: 'auto', background: 'var(--secondary)' }}
         >
-          <Plus size={18} /> New Message
+          <Plus size={18} /> <span className="btn-label">New Message</span>
         </button>
       </nav>
 
       {/* Main List */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
         <header style={{ padding: '24px', borderBottom: '1px solid var(--surface-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <h2 style={{ fontSize: '1.25rem', textTransform: 'capitalize' }}>{selectedFolder}</h2>
           <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
@@ -112,7 +112,7 @@ function EmailDashboard({ currentGesture, transcription, onTranscriptionChange, 
                     placeholder="Enter Word (e.g. HELP)"
                     value={learningWord}
                     onChange={(e) => setLearningWord(e.target.value.toUpperCase())}
-                    style={{ background: 'var(--surface)', border: '1px solid var(--surface-border)', color: 'white', padding: '16px', borderRadius: '8px', textAlign: 'center', fontSize: '1.2rem', outline: 'none' }}
+                    style={{ background: 'var(--surface)', border: '1px solid var(--surface-border)', color: 'white', padding: '16px', borderRadius: '8px', textAlign: 'center', fontSize: '1.2rem', outline: 'none', width: '100%', boxSizing: 'border-box' }}
                   />
                   <button 
                     onClick={() => {
@@ -149,20 +149,20 @@ function EmailDashboard({ currentGesture, transcription, onTranscriptionChange, 
                 onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.02)'}
                 onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
               >
-                <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>
+                <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', flexShrink: 0 }}>
                   {email.from[0]}
                 </div>
-                <div style={{ flex: 1 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px', flexWrap: 'wrap', gap: '4px' }}>
                     <span style={{ fontWeight: email.read ? 500 : 700 }}>{email.from}</span>
                     <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{email.time}</span>
                   </div>
                   <div style={{ fontWeight: email.read ? 400 : 600, fontSize: '0.95rem' }}>{email.subject}</div>
-                  <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '400px' }}>
+                  <div className="email-preview-text">
                     {email.preview}
                   </div>
                 </div>
-                <ChevronRight size={18} color="var(--text-muted)" />
+                <ChevronRight size={18} color="var(--text-muted)" style={{ flexShrink: 0 }} />
               </div>
             ))
           )}
@@ -171,8 +171,8 @@ function EmailDashboard({ currentGesture, transcription, onTranscriptionChange, 
 
       {/* Compose Modal */}
       {composing && (
-        <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10 }}>
-          <div className="glass animate-fade-in" style={{ width: '600px', background: 'var(--background)', padding: '32px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        <div className="email-compose-modal-backdrop">
+          <div className="glass animate-fade-in email-compose-modal">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <h3>New Message</h3>
               <X cursor="pointer" onClick={() => setComposing(false)} />
@@ -183,7 +183,7 @@ function EmailDashboard({ currentGesture, transcription, onTranscriptionChange, 
               <input 
                 type="text" 
                 placeholder="to@example.com" 
-                style={{ width: '100%', background: 'var(--surface)', border: '1px solid var(--surface-border)', color: 'white', padding: '12px', borderRadius: '8px', outline: 'none' }} 
+                style={{ width: '100%', background: 'var(--surface)', border: '1px solid var(--surface-border)', color: 'white', padding: '12px', borderRadius: '8px', outline: 'none', boxSizing: 'border-box' }} 
               />
             </div>
             
@@ -194,7 +194,7 @@ function EmailDashboard({ currentGesture, transcription, onTranscriptionChange, 
               </div>
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', flexWrap: 'wrap' }}>
               <button className="btn btn-secondary" onClick={() => setComposing(false)}>
                 <Trash2 size={18} /> Discard 
                 <span style={{ fontSize: '0.7rem', opacity: 0.7 }}> (Thumbs Down)</span>

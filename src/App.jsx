@@ -34,17 +34,17 @@ function App() {
 
   return (
     <div className="container animate-fade-in">
-      <header style={{ padding: '40px 0', textAlign: 'center' }}>
-        <h1 style={{ fontSize: '2.5rem', fontWeight: 700, background: 'linear-gradient(to right, var(--primary), var(--secondary))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+      <header className="app-header">
+        <h1 className="app-header-title">
           GestureEmail Pro
         </h1>
-        <p style={{ color: 'var(--text-muted)', marginTop: '8px' }}>
+        <p className="app-header-sub">
           Accessible communication for everyone
         </p>
       </header>
 
-      <main style={{ display: 'grid', gridTemplateColumns: 'minmax(300px, 1fr) 2fr', gap: '24px' }}>
-        <aside style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+      <main className="app-main">
+        <aside className="app-aside">
           <GestureEngine 
             onGesture={handleGesture} 
             currentText={transcription} 
@@ -64,7 +64,7 @@ function App() {
         </section>
       </main>
 
-      <footer style={{ marginTop: 'auto', padding: '40px 0', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+      <footer className="app-footer">
         Built for Accessibility • Precision Gesture Control • Real-time Speech Transcription
       </footer>
     </div>
