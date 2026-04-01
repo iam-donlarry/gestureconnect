@@ -13,6 +13,7 @@ function EmailDashboard({ currentGesture, transcription, onTranscriptionChange, 
   const [selectedFolder, setSelectedFolder] = useState('inbox')
   const [notification, setNotification] = useState(null)
   const [learningWord, setLearningWord] = useState('')
+  const [subject, setSubject] = useState('')
 
   // Handle gesture actions
   useEffect(() => {
@@ -42,6 +43,7 @@ function EmailDashboard({ currentGesture, transcription, onTranscriptionChange, 
   const handleSend = () => {
     setNotification('Email sent successfully!')
     setComposing(false)
+    setSubject('')
     setTimeout(() => setNotification(null), 3000)
   }
 
@@ -183,6 +185,17 @@ function EmailDashboard({ currentGesture, transcription, onTranscriptionChange, 
               <input 
                 type="text" 
                 placeholder="to@example.com" 
+                style={{ width: '100%', background: 'var(--surface)', border: '1px solid var(--surface-border)', color: 'white', padding: '12px', borderRadius: '8px', outline: 'none', boxSizing: 'border-box' }} 
+              />
+            </div>
+
+            <div>
+              <label style={{ display: 'block', fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '8px' }}>Subject</label>
+              <input 
+                type="text" 
+                placeholder="Enter subject..." 
+                value={subject}
+                onChange={(e) => setSubject(e.target.value)}
                 style={{ width: '100%', background: 'var(--surface)', border: '1px solid var(--surface-border)', color: 'white', padding: '12px', borderRadius: '8px', outline: 'none', boxSizing: 'border-box' }} 
               />
             </div>
