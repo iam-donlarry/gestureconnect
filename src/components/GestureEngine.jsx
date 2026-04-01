@@ -11,6 +11,17 @@ function GestureEngine({ onGesture, currentText, learnedSigns = [], onLandmarks 
   const lastGestureRef = useRef(null)
   const gestureCountRef = useRef(0)
   const motionBufferRef = useRef([])
+  const lastSentGestureRef = useRef(null)
+  const cooldownTimerRef = useRef(null)
+  
+  // Logic refs to avoid stale closures in MediaPipe callback
+  const cooldownActiveRef = useRef(false)
+  const hasNeutralizedRef = useRef(true) 
+  const neutralCountRef = useRef(0)
+  
+  // State for UI only
+  const [cooldownActive, setCooldownActive] = useState(false)
+  const [stabilityProgress, setStabilityProgress] = useState(0)
 
   // Similarity engine: Euclidean distance based comparison
   const calculateSimilarity = (current, learned) => {
@@ -86,6 +97,20 @@ function GestureEngine({ onGesture, currentText, learnedSigns = [], onLandmarks 
   }
 
   const handleGestureState = (gesture) => {
+    // 1. Check Cooldown (Ref based for accuracy)
+    if (cooldownActiveRef.current) return
+
+    // 2. Track Neutral State (Release)
+    if (gesture === 'searching') {
+      neutralCountRef.current += 1
+      if (neutralCountRef.current >= 5) {
+        hasNeutralizedRef.current = true
+      }
+    } else {
+      neutralCountRef.current = 0
+    }
+
+    // 3. Stability Engine
     if (gesture === lastGestureRef.current) {
       gestureCountRef.current += 1
     } else {
@@ -93,15 +118,41 @@ function GestureEngine({ onGesture, currentText, learnedSigns = [], onLandmarks 
       gestureCountRef.current = 0
     }
 
-    // Require stable detection for 5 frames
-    if (gestureCountRef.current > 5) {
-      if (gesture !== activeGesture) {
-        setActiveGesture(gesture)
-        if (gesture !== 'searching' && gesture !== null) {
-          onGesture(gesture)
-          // Reset after sending to allow re-triggering the same gesture
-          setTimeout(() => onGesture(null), 100)
+    // Update stability progress (scale of 0 to 100)
+    const threshold = 15 // Frame count for stability
+    setStabilityProgress(Math.min((gestureCountRef.current / threshold) * 100, 100))
+
+    // 4. Detection Logic
+    if (gestureCountRef.current >= threshold) {
+      if (gesture !== 'searching' && gesture !== null) {
+        
+        // --- REPEAT PREVENTION ---
+        // If same character, MUST have neutralized (released) first
+        if (gesture === lastSentGestureRef.current && !hasNeutralizedRef.current) {
+          return // Ignore repeated hold
         }
+
+        // --- EMIT GESTURE ---
+        onGesture(gesture)
+        lastSentGestureRef.current = gesture
+        hasNeutralizedRef.current = false
+        setActiveGesture(gesture)
+        
+        // --- START COOLDOWN ---
+        cooldownActiveRef.current = true
+        setCooldownActive(true)
+        setStabilityProgress(0)
+        
+        if (cooldownTimerRef.current) clearTimeout(cooldownTimerRef.current)
+        cooldownTimerRef.current = setTimeout(() => {
+          cooldownActiveRef.current = false
+          setCooldownActive(false)
+          // Reset active gesture to null to allow it to be re-detected after cooldown
+          setActiveGesture(null)
+        }, 1200) // 1.2s cooldown
+      } else {
+        // If searching is stable, just update the active gesture display
+        setActiveGesture(gesture)
       }
     }
   }
@@ -254,8 +305,23 @@ function GestureEngine({ onGesture, currentText, learnedSigns = [], onLandmarks 
         </div>
 
         {activeGesture && activeGesture !== 'searching' && (
-          <div className="animate-fade-in" style={{ position: 'absolute', top: '16px', right: '16px', background: 'var(--primary)', color: 'white', padding: '8px 16px', borderRadius: '20px', fontWeight: 'bold', fontSize: '0.8rem', textTransform: 'uppercase' }}>
-            {activeGesture.replace('-', ' ')} detected
+          <div className="animate-fade-in" style={{ position: 'absolute', top: '16px', right: '16px', background: cooldownActive ? 'var(--text-muted)' : 'var(--primary)', color: 'white', padding: '8px 16px', borderRadius: '20px', fontWeight: 'bold', fontSize: '0.8rem', textTransform: 'uppercase', transition: 'all 0.3s ease' }}>
+            {activeGesture.replace('-', ' ')} {cooldownActive ? 'SAVED' : 'detected'}
+          </div>
+        )}
+
+        {/* Stability Progress Bar */}
+        {!cooldownActive && stabilityProgress > 0 && (
+          <div style={{ position: 'absolute', bottom: '0', left: '0', height: '4px', background: 'var(--accent)', width: `${stabilityProgress}%`, transition: 'width 0.1s linear' }} />
+        )}
+
+        {/* Cooldown Overlay */}
+        {cooldownActive && (
+          <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.3)', backdropFilter: 'grayscale(1)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 5 }}>
+            <div className="glass" style={{ padding: '20px', textAlign: 'center', borderColor: 'var(--primary)', color: 'white' }}>
+              <div style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>WAIT...</div>
+              <div style={{ fontSize: '0.7rem', opacity: 0.8 }}>Next letter in 1.5s</div>
+            </div>
           </div>
         )}
       </div>
